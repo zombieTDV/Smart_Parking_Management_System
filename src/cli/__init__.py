@@ -1,2 +1,2 @@
 # This file makes the cli directory a Python package 
-omg umpala
+test lan thu n 
