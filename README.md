@@ -20,7 +20,7 @@ python -m venv ENV
 
 # Activate virtual environment
 # On Windows:
-ENV\Scripts\activate
+ENV\Scripts\Activate.ps1
 # On macOS/Linux:
 source ENV/bin/activate
 ```
