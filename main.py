@@ -1,6 +1,6 @@
 from src.database import parking_slot
-from src.controllers.admin_controller import admin
-from src.controllers.owner_controller import User
+from src.Repositories.admin import admin
+from src.Repositories.owner import User
 
 
 if __name__ == "__main__":
