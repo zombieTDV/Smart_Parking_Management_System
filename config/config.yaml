@@ -1,5 +1,10 @@
 database_info:
-  host: "mainline.proxy.rlwy.net"
+  host: mainline.proxy.rlwy.net
   public_port: 12066
-  database: "railway"
-
+  database: railway
+  user: root
+  password: XKahsWDvEBIvWvijLrQVcSxgPMSmgBAh
+  
+parking_slot:
+  total_slots: 0
+  hourly_rates: 10

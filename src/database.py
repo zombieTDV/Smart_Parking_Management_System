@@ -1,90 +1,89 @@
 import mysql.connector
+from config.setting import settings
 
-from src.utils.helpers import settings
 
-class Database_management():
-    def __init__(self) -> None:
-         pass
-    
+def handle_errors(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except mysql.connector.Error as err:
+            print(f"Database error: {err}")
+        except Exception as err:
+            print(f"Unexpected error: {err}")
+    return wrapper
+
+
+class Database:
+    def __init__(self):
+        pass
+
     def connect(self):
-        print("Attempting to connect to MySQL...")
         conn = mysql.connector.connect(
-            host = settings.database_host,
-            port= settings.public_port,
-            user = "root",
-            password = "XKahsWDvEBIvWvijLrQVcSxgPMSmgBAh",
-            database = settings.database
+            host=settings.database_host,
+            port=settings.public_port,
+            user=settings.user,
+            password=settings.password,
+            database=settings.database
         )
-        print("Connected successfully!")
         return conn
 
-    def n_rows(self, table_name: str) -> int:
-        conn = self.connect()
-        cursor = conn.cursor()
-        
-        try:
-            sql = f"SELECT COUNT(*) AS row_count FROM {table_name};"
-            cursor.execute(sql)
-            result = cursor.fetchone()
-            if result:
-                return int(result[0]) # type: ignore
-            return 0
-            
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-            return 0
-        except Exception as err:
-            print(f"Unexpected error: {err}")
-            return 0
-        finally:
-            cursor.close()
-            conn.close()
-        
-        
-    def clear_table(self, table_name: str) -> None:
+    @handle_errors
+    def execute(self, sql: str, params = None, fetch: bool = False, commit: bool = False):
         conn = self.connect()
         cursor = conn.cursor()
         try:
-            sql = f"TRUNCATE TABLE {table_name};"
-            cursor.execute(sql)
-            conn.commit()
-            print(f"All data from {table_name} cleared successfully.")
-            
-        except mysql.connector.Error as err:
-                print(f"Error: {err}")
-        except Exception as err:
-                print(f"Unexpected error: {err}")
-        finally:
-            cursor.close()
-            conn.close()
-        
-
-
-class Parking_slot_table():
-    def __init__(self, database_management: Database_management) -> None:
-         self.database_management = database_management
-     
-    def init_parking_slots(self, size: int) -> None:
-        conn = self.database_management.connect()
-        cursor = conn.cursor()
-        try:
-            for _ in range(size):
-                
-                    sql = "INSERT INTO parking_slot (available) VALUES (%s)"
-                    val = (1,)
-                    cursor.execute(sql, val)
-                    conn.commit()
-                    print(f"{cursor.rowcount} record inserted successfully.")
-                    
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-        except Exception as err:
-            print(f"Unexpected error: {err}")
-                
+            cursor.execute(sql, params or ())
+            if commit:
+                conn.commit()
+            if fetch:
+                return cursor.fetchall()
         finally:
             cursor.close()
             conn.close()
 
 
-database_management = Database_management()
-parking_slot_table = Parking_slot_table(database_management) 
+class Table:
+    def __init__(self, name: str, db: Database):
+        self.name = name
+        self.db = db
+
+    def create(self, schema: str):
+        sql = f"CREATE TABLE IF NOT EXISTS `{self.name}` ({schema});"
+        self.db.execute(sql, commit=True)
+        print(f"Table `{self.name}` created or exists.")
+
+    def select_all(self):
+        sql = f"SELECT * FROM `{self.name}`;"
+        return self.db.execute(sql, fetch=True)
+
+    def delete_all(self):
+        sql = f"TRUNCATE TABLE `{self.name}`;"
+        self.db.execute(sql, commit=True)
+        print(f"All records from `{self.name}` deleted.")
+
+    def count(self):
+        sql = f"SELECT COUNT(*) FROM `{self.name}`;"
+        result = self.db.execute(sql, fetch=True)
+        return int(result[0][0]) if result else 0
+
+    def insert(self, columns: list, values: tuple):
+        cols = ", ".join(f"`{c}`" for c in columns)
+        placeholder = ", ".join("%s" for _ in values)
+        sql = f"INSERT INTO `{self.name}` ({cols}) VALUES ({placeholder});"
+        self.db.execute(sql, params=values, commit=True)
+        print(f"1 record inserted into `{self.name}`.")
+
+
+db = Database()
+
+parking_slot = Table("parking_slot", db)
+
+parking_slot.create("slot_id INT AUTO_INCREMENT PRIMARY KEY, available BOOL NOT NULL")
+
+# parking_slot.insert(["available"], (True,))
+
+# rows = parking_slot.select_all()
+
+# count = parking_slot.count()
+
+# parking_slot.delete_all()
