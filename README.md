@@ -17,10 +17,15 @@ cd smart_parking_management_system
 ```bash
 # Create virtual environment
 python -m venv ENV
+```
 
+```bash
 # Activate virtual environment
 # On Windows:
 ENV\Scripts\activate.bat
+```
+
+```bash
 # On macOS/Linux:
 source ENV/bin/activate
 ```
