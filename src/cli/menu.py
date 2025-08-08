@@ -1,11 +1,12 @@
+def admin_menu():
+    pass
 
-from src.cli.menu import show_main_menu
+def attendant_menu():
+    pass
 
-if __name__ == "__main__":
-    show_main_menu()
-from src.controllers.admin_controller import admin_menu
-from src.controllers.attendant_controller import attendant_menu
-from src.controllers.owner_controller import owner_menu
+def owner_menu():
+    pass
+
 
 def show_main_menu():
     while True:
@@ -28,3 +29,5 @@ def show_main_menu():
             break
         else:
             print("Lựa chọn không hợp lệ.")
+
+
