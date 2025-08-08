@@ -24,4 +24,5 @@ class ADMIN():
                 print(f"ID: {select[i][0]}  ----- availability: Occupied") # type: ignore
     
     
+
 admin = ADMIN()
