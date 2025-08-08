@@ -84,10 +84,5 @@ smart_parking_management_system/
 │   └── class_descriptions.md
 │
 ├── screenshots/
-│   └── role_based_interactions.png
-│
-└── tests/
-    ├── conftest.py
-    ├── test_user.py
-    ├── test_parking_slot.py
-    └── test_transaction.py
+    └── role_based_interactions.png
+
