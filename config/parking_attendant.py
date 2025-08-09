@@ -1,99 +1,88 @@
-import json
-from datetime import datetime, timedelta
-
+import sqlite3
+from datetime import datetime
 
 class ParkingAttendant:
-    def __init__(self, data_file="parking_data.json", rate_per_hour=5):
-        self.data_file = data_file
+    def __init__(self, db_name="parking_data.db", rate_per_hour=5):
+        self.db_name = db_name
         self.rate_per_hour = rate_per_hour
-        self.slots = {}
-        self.vehicles = {}
-        self.load_data()
 
-    def load_data(self):
-        """Load slot and vehicle data from file."""
-        try:
-            with open(self.data_file, "r") as f:
-                data = json.load(f)
-                self.slots = data.get("slots", {})
-                self.vehicles = data.get("vehicles", {})
-        except FileNotFoundError:
-            self.slots = {f"S{i+1}": {"available": True} for i in range(10)}
-            self.vehicles = {}
-            self.save_data()
+    def connect(self):
+        return sqlite3.connect(self.db_name)
 
-    def save_data(self):
-        """Save slot and vehicle data to file."""
-        with open(self.data_file, "w") as f:
-            json.dump({"slots": self.slots, "vehicles": self.vehicles}, f, indent=4)
+    def view_available_slots(self):
+      
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT slot_id FROM slots WHERE available = 1")
+            available = [row[0] for row in cur.fetchall()]
+        print("Available Slots:", available)
+        return available
 
     def check_in_vehicle(self, plate_number):
-        """Assigns an available slot to the vehicle."""
-        available_slots = [slot for slot, info in self.slots.items() if info["available"]]
+        available_slots = self.view_available_slots()
         if not available_slots:
             print("No available slots right now.")
             return
 
         assigned_slot = available_slots[0]
-        self.slots[assigned_slot]["available"] = False
-        self.vehicles[plate_number] = {
-            "slot": assigned_slot,
-            "check_in": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        self.save_data()
+        check_in_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute("UPDATE slots SET available = 0 WHERE slot_id = ?", (assigned_slot,))
+            cur.execute(
+                "INSERT INTO vehicles (plate_number, slot_id, check_in) VALUES (?, ?, ?)",
+                (plate_number, assigned_slot, check_in_time)
+            )
+            conn.commit()
         print(f"Vehicle {plate_number} checked in at slot {assigned_slot}.")
 
     def check_out_vehicle(self, plate_number):
-        """Releases slot, calculates fee, and removes vehicle record."""
-        vehicle_info = self.vehicles.get(plate_number)
-        if not vehicle_info:
-            print("Vehicle not found.")
-            return
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT slot_id, check_in FROM vehicles WHERE plate_number = ?",
+                (plate_number,)
+            )
+            row = cur.fetchone()
+            if not row:
+                print("Vehicle not found.")
+                return
 
-        check_in_time = datetime.strptime(vehicle_info["check_in"], "%Y-%m-%d %H:%M:%S")
-        duration = datetime.now() - check_in_time
-        hours_parked = int(duration.total_seconds() // 3600)
-        if duration.total_seconds() % 3600 > 0:
-            hours_parked += 1  # round up to next hour
+            slot, check_in_str = row
+            check_in_time = datetime.strptime(check_in_str, "%Y-%m-%d %H:%M:%S")
+            duration = datetime.now() - check_in_time
+            hours_parked = int(duration.total_seconds() // 3600)
+            if duration.total_seconds() % 3600 > 0:
+                hours_parked += 1
 
-        fee = hours_parked * self.rate_per_hour
-        slot = vehicle_info["slot"]
+            fee = hours_parked * self.rate_per_hour
+            check_out_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Free the slot and remove vehicle record
-        self.slots[slot]["available"] = True
-        del self.vehicles[plate_number]
-        self.save_data()
+            cur.execute("UPDATE slots SET available = 1 WHERE slot_id = ?", (slot,))
+            cur.execute("DELETE FROM vehicles WHERE plate_number = ?", (plate_number,))
+            cur.execute(
+                "INSERT INTO transactions (plate_number, slot_id, check_in, check_out, fee) VALUES (?, ?, ?, ?, ?)",
+                (plate_number, slot, check_in_str, check_out_time, fee)
+            )
+            conn.commit()
 
         print(f"Vehicle {plate_number} checked out from slot {slot}.")
         print(f"Hours parked: {hours_parked}, Fee: ${fee}")
 
-    def view_available_slots(self):
-        """Displays all available parking slots."""
-        available = [slot for slot, info in self.slots.items() if info["available"]]
-        print("Available Slots:", available)
+    def view_transactions(self):
+        """Xem toàn bộ lịch sử giao dịch"""
+        with self.connect() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT plate_number, slot_id, check_in, check_out, fee FROM transactions")
+            transactions = cur.fetchall()
+
+        if not transactions:
+            print("No transactions found.")
+            return
+
+        print("\nTransaction History:")
+        for plate, slot, check_in, check_out, fee in transactions:
+            print(f"Plate: {plate} | Slot: {slot} | In: {check_in} | Out: {check_out} | Fee: ${fee}")
 
 
-# # Example usage
-# if __name__ == "__main__":
-#     attendant = ParkingAttendant(rate_per_hour=5)
-
-#     while True:
-#         print("\n--- Parking Attendant Menu ---")
-#         print("1. View available slots")
-#         print("2. Check-in vehicle")
-#         print("3. Check-out vehicle")
-#         print("4. Exit")
-#         choice = input("Enter choice: ")
-
-#         if choice == "1":
-#             attendant.view_available_slots()
-#         elif choice == "2":
-#             plate = input("Enter vehicle plate number: ")
-#             attendant.check_in_vehicle(plate)
-#         elif choice == "3":
-#             plate = input("Enter vehicle plate number: ")
-#             attendant.check_out_vehicle(plate)
-#         elif choice == "4":
-#             break
-#         else:
-#             print("Invalid choice.")
