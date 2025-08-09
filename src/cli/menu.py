@@ -1,4 +1,5 @@
 from src.Repositories.admin import admin
+from src.models.parking_slot import parking_slot
 from config.setting import settings
 
 # menu.py
@@ -10,8 +11,8 @@ from src.Repositories.admin import admin
 
 # Tài khoản admin cố định
 ADMIN_CREDENTIALS = {
-    "username": "Gr4Pt",
-    "password": "123456"
+    "username": "",
+    "password": ""
 }
 
 def show_main_menu():
@@ -109,9 +110,9 @@ def admin_menu():
         choice = input("Chọn: ").strip()
 
         if choice == '1':
-            admin.set_total_slots(int(input(f"Tổng số chỗ cũ: {admin.parking_slot.total_slots}\n\tNhập tổng số chỗ đỗ mới: ")))
+            admin.set_total_slots(int(input(f"Tổng số chỗ cũ: {parking_slot.total_slots}\n\tNhập tổng số chỗ đỗ mới: ")))
         elif choice == '2':
-            admin.set_hourly_rates(float(input(f"Giá theo giờ cũ: {admin.parking_slot.hourly_rates}\n\tNhập giá theo giờ mới: ")))
+            admin.set_hourly_rates(float(input(f"Giá theo giờ cũ: {parking_slot.hourly_rates}\n\tNhập giá theo giờ mới: ")))
         elif choice == '3':
             admin.view_available_slots()
         elif choice == '0':

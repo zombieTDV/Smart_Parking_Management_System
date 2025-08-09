@@ -5,7 +5,6 @@ from datetime import datetime
 class Parking_slot:
     def __init__(self, total_slots=None, hourly_rates=None):
         self.table = Table("parking_slot", db)
-        self.table.create("slot_id INT AUTO_INCREMENT PRIMARY KEY, available BOOL NOT NULL")
         
         if total_slots is None:
             total_slots = settings.cfg["parking_slot"]["total_slots"]
@@ -34,6 +33,19 @@ class Parking_slot:
         settings.save()
         
         self.update_from_settings()
+        
+    def delete_all_slots(self) -> None:
+        """
+        Xóa tất cả chỗ đỗ.
+        """
+        self.table.delete_all()
+        
+        settings.cfg["parking_slot"]["total_slots"] = 0
+        
+        settings.save()
+        self.update_from_settings()
+        
+        print("All parking slots have been deleted.")
         
     def set_hourly_rates(self, hourly_rates: float) -> None:
         """
@@ -88,7 +100,6 @@ class Parking_slot:
                 print(f"ID: {select[i][0]}  ----- availability: Occupied") # type: ignore
                 
         
-parking_slot = Table("parking_slot", db)
 parking_slot = Parking_slot(
     total_slots=settings.cfg["parking_slot"]["total_slots"],
     hourly_rates=settings.cfg["parking_slot"]["hourly_rates"])
