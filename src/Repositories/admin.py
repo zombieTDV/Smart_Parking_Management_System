@@ -1,6 +1,6 @@
 from config.setting import settings
 from src.models.parking_slot import Parking_slot
-from src.models.acount import acounts_central
+from src.models.account import accounts_central
 class ADMIN():
     def __init__(self) -> None:
         self.parking_slot = Parking_slot(
@@ -31,13 +31,13 @@ class ADMIN():
         """
         Hiển thị tất cả tài khoản đã đăng ký.
         """
-        acounts_central.view_all_accounts()
+        accounts_central.view_all_accounts()
         
     def delete_all_accounts(self) -> None:
         """
         Xóa tất cả tài khoản đã đăng ký.
         """
-        acounts_central.delete_all_acounts()
+        accounts_central.delete_all_accounts()
         
     
     
