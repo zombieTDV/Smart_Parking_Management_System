@@ -100,3 +100,75 @@ class ParkingAttendant:
 
 # Khởi tạo attendant
 attendant = ParkingAttendant()
+
+from config.setting import settings
+from src.database import parking_slot, transaction_repo
+from src.models import ParkingSlot, Transaction
+
+class ATTENDANT:
+    def __init__(self) -> None:
+        pass
+
+    def check_in_vehicle(self):
+        """
+        Nhận xe vào bãi, gán chỗ đỗ và tạo giao dịch mới.
+        """
+        plate = input("Nhập biển số xe: ").strip().upper()
+        free_slots = parking_slot.get_available_slots()
+        if not free_slots:
+            print("❌ Hiện tại không còn chỗ trống.")
+            return
+
+        print("\nDanh sách chỗ đỗ trống:")
+        for slot in free_slots:
+            print(f"- ID: {slot.id} | Vị trí: {slot.location or 'N/A'}")
+
+        slot_id = input("\nChọn ID chỗ đỗ: ").strip()
+        try:
+            parking_slot.assign_vehicle_to_slot(slot_id, plate)
+            transaction_repo.create_transaction(plate, slot_id)
+            print(f"✅ Xe {plate} đã được gán vào chỗ {slot_id}.")
+        except Exception as e:
+            print(f"❌ Lỗi khi check-in: {e}")
+
+    def check_out_vehicle(self):
+        """
+        Xuất xe, tính phí dựa trên thời gian sử dụng và đóng giao dịch.
+        """
+        plate = input("Nhập biển số xe cần xuất: ").strip().upper()
+        tr = transaction_repo.get_active_transaction_by_plate(plate)
+        if not tr:
+            print("❌ Không tìm thấy giao dịch đang mở cho xe này.")
+            return
+
+        hours = tr.calculate_duration_hours()
+        fee   = hours * settings.hourly_rate
+        print(f"\nThời gian đỗ: {hours} giờ")
+        print(f"Phí phải thanh toán: {fee} $")
+
+        confirm = input("Xác nhận thanh toán? (y/n): ").strip().lower()
+        if confirm == 'y':
+            transaction_repo.close_transaction(tr.id, fee)
+            parking_slot.release_slot(tr.slot_id)
+            print("✅ Thanh toán thành công. Xe đã được xuất.")
+        else:
+            print("❌ Đã hủy thao tác check-out.")
+
+    def update_slot_status(self):
+        """
+        Cập nhật thủ công trạng thái (free/occupied) của một chỗ đỗ.
+        """
+        slot_id = input("Nhập ID chỗ đỗ: ").strip()
+        status  = input("Trạng thái (0: Trống, 1: Đang sử dụng): ").strip()
+        if status not in ('0', '1'):
+            print("❌ Trạng thái không hợp lệ.")
+            return
+
+        new_status = 'free' if status == '0' else 'occupied'
+        try:
+            parking_slot.update_slot_status(slot_id, new_status)
+            print(f"✅ Cập nhật trạng thái chỗ {slot_id} → {new_status}.")
+        except Exception as e:
+            print(f"❌ Lỗi khi cập nhật trạng thái: {e}")
+
+attendant = ATTENDANT()
