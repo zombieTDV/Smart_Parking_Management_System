@@ -10,8 +10,11 @@ class ADMIN():
         """
         Cập nhật tổng số chỗ đỗ.
         """
-        parking_slot.set_total_slots(total_slots)
-        parking_slot.modifile_slots()
+        if total_slots <= 0:
+            parking_slot.delete_all_slots()
+        else:
+            parking_slot.set_total_slots(total_slots)
+            parking_slot.modifile_slots()
     
     def set_hourly_rates(self, hourly_rates: float) -> None:
         """

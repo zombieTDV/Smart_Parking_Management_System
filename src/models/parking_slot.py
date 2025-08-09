@@ -45,7 +45,12 @@ class Parking_slot:
         settings.save()
         self.update_from_settings()
         
-        print("All parking slots have been deleted.")
+    def release_slot(self, slot_id: int) -> None:
+        """
+        Giải phóng chỗ đỗ theo ID.
+        """
+        self.table.set_value(record_name='slot_id', record_id=slot_id, column='available', value=True)
+        print(f"Slot ID {slot_id} has been released.")
         
     def set_hourly_rates(self, hourly_rates: float) -> None:
         """
@@ -98,6 +103,15 @@ class Parking_slot:
                 print(f"ID: {select[i][0]}  ----- availability: Free") # type: ignore
             else:
                 print(f"ID: {select[i][0]}  ----- availability: Occupied") # type: ignore
+                
+                
+    def get_available_slots(self):
+        select = self.table.find_record_with_value(column='available', value=True)
+        if not select:
+            print("No available slots.")
+            return []
+        print("=== Parking Status ===")
+        return select
                 
         
 parking_slot = Parking_slot(

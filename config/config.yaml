@@ -5,5 +5,5 @@ database_info:
   user: root
   password: TyeCtcJGTMIqAurynqCVqRGmYubNQNpA
 parking_slot:
-  total_slots: 0
+  total_slots: 3
   hourly_rates: 10.0
