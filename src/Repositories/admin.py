@@ -38,7 +38,7 @@ class ADMIN():
     def generate_revenue_report(self) -> None:
         print("\n--- Báo cáo doanh thu ---")
         total_revenue = settings.cfg["parking_slot"]["total_slots"] * settings.cfg["parking_slot"]["hourly_rates"]
-        print(f"Tổng doanh thu dự kiến: {total_revenue} VND")
+        print(f"Tổng doanh thu dự kiến: {total_revenue}$")
         
 admin = ADMIN()
 
