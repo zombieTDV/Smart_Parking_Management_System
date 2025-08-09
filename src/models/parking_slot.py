@@ -89,6 +89,8 @@ class Parking_slot:
                 
         
 parking_slot = Table("parking_slot", db)
+parking_slot = Parking_slot(
+    total_slots=settings.cfg["parking_slot"]["total_slots"],
+    hourly_rates=settings.cfg["parking_slot"]["hourly_rates"])
 
-            
     
