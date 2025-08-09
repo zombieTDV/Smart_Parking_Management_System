@@ -1,4 +1,5 @@
 from src.Repositories.admin import admin
+from config.setting import settings
 
 def show_main_menu():
     while True:
@@ -25,19 +26,19 @@ def show_main_menu():
 def admin_menu():
     while True:
         print("\n--- Menu Admin ---")
-        print("1. Cấu hình bãi đỗ")
-        print("2. Quản lý chỗ đỗ")
-        print("3. Xem báo cáo doanh thu")
+        print("1. Cập nhật tổng số chỗ đỗ")
+        print("2. Cập nhật giá theo giờ")
+        print("3. Tình trạng các chỗ đỗ")
         print("0. Quay lại")
 
         choice = input("Chọn: ")
 
         if choice == '1':
-            admin.configure_parking_lot()
+            admin.set_total_slots(int(input(f"Tổng số chỗ cũ: {admin.parking_slot.total_slots}\n\tNhập tổng số chỗ đỗ mới: ")))
         elif choice == '2':
-            admin.manage_parking_slots()
+            admin.set_hourly_rates(float(input(f"Giá theo giờ cũ: {admin.parking_slot.hourly_rates}\n\tNhập giá theo giờ mới: ")))
         elif choice == '3':
-            admin.generate_revenue_report()
+            admin.view_available_slots()
         elif choice == '0':
             break
         else:
@@ -53,16 +54,16 @@ def attendant_menu():
 
         choice = input("Chọn: ")
 
-        if choice == '1':
-            attendant.check_in_vehicle()
-        elif choice == '2':
-            attendant.check_out_vehicle()
-        elif choice == '3':
-            attendant.update_slot_status()
-        elif choice == '0':
-            break
-        else:
-            print("Lựa chọn không hợp lệ.")
+        # if choice == '1':
+        #     attendant.check_in_vehicle()
+        # elif choice == '2':
+        #     attendant.check_out_vehicle()
+        # elif choice == '3':
+        #     attendant.update_slot_status()
+        # elif choice == '0':
+        #     break
+        # else:
+        #     print("Lựa chọn không hợp lệ.")
 
 def owner_menu():
     while True:

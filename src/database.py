@@ -79,11 +79,33 @@ class Table:
         sql = f"UPDATE `{self.name}` SET {set_clause} WHERE `id` = %s;"
         self.db.execute(sql, params=values, commit=True)
         print(f"Record with ID {record_id} updated in `{self.name}`.")
+        
+    def delete(self, record_name: str, record_id: int):
+        sql = f"DELETE FROM `{self.name}` WHERE `{record_name}` = %s;"
+        self.db.execute(sql, params=(record_id,), commit=True)
+        print(f"Record with ID {record_id} deleted from `{self.name}`.")
+        
+    def delete_table(self):
+        sql = f"DROP TABLE IF EXISTS `{self.name}`;"
+        self.db.execute(sql, commit=True)
+        print(f"Table `{self.name}` deleted.")
+
+    def delete_last_n(self, n_rows: int):
+        """
+        Delete the last n_rows from the table, ordered by id descending.
+        """
+        sql = f"SELECT `id` FROM `{self.name}` ORDER BY `id` DESC LIMIT %s;"
+        ids = self.db.execute(sql, params=(n_rows,), fetch=True)
+        if ids:
+            for row in ids:
+                self.delete(row[0]) # type: ignore
+        else:
+            print("No rows to delete.")
 
 
 db = Database()
 
-parking_slot = Table("parking_slot", db)
+
 
 # parking_slot.insert(["available"], (True,))
 
