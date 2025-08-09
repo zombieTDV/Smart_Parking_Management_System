@@ -1,9 +1,3 @@
-from src.cli.menu import show_main_menu
-
-if __name__ == "__main__":
-    show_main_menu()
-
-
 from src.Repositories import admin, attendant, owner
 
 def show_main_menu():
@@ -38,16 +32,16 @@ def admin_menu():
 
         choice = input("Chọn: ")
 
-        if choice == '1':
-            admin.configure_parking_lot()
-        elif choice == '2':
-            admin.manage_parking_slots()
-        elif choice == '3':
-            admin.generate_revenue_report()
-        elif choice == '0':
-            break
-        else:
-            print("Lựa chọn không hợp lệ.")
+        # if choice == '1':
+        #     admin.configure_parking_lot()
+        # elif choice == '2':
+        #     admin.manage_parking_slots()
+        # elif choice == '3':
+        #     admin.generate_revenue_report()
+        # elif choice == '0':
+        #     break
+        # else:
+        #     print("Lựa chọn không hợp lệ.")
 
 def attendant_menu():
     while True:
@@ -59,16 +53,16 @@ def attendant_menu():
 
         choice = input("Chọn: ")
 
-        if choice == '1':
-            attendant.check_in_vehicle()
-        elif choice == '2':
-            attendant.check_out_vehicle()
-        elif choice == '3':
-            attendant.update_slot_status()
-        elif choice == '0':
-            break
-        else:
-            print("Lựa chọn không hợp lệ.")
+        # if choice == '1':
+        #     attendant.check_in_vehicle()
+        # elif choice == '2':
+        #     attendant.check_out_vehicle()
+        # elif choice == '3':
+        #     attendant.update_slot_status()
+        # elif choice == '0':
+        #     break
+        # else:
+        #     print("Lựa chọn không hợp lệ.")
 
 def owner_menu():
     while True:
@@ -79,12 +73,12 @@ def owner_menu():
 
         choice = input("Chọn: ")
 
-        if choice == '1':
-            owner.view_available_slots()
-        elif choice == '2':
-            owner.pay_parking_fee()
-        elif choice == '0':
-            break
-        else:
-            print("Lựa chọn không hợp lệ.")
+        # if choice == '1':
+        #     owner.view_available_slots()
+        # elif choice == '2':
+        #     owner.pay_parking_fee()
+        # elif choice == '0':
+        #     break
+        # else:
+        #     print("Lựa chọn không hợp lệ.")
 
