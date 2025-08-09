@@ -1,9 +1,9 @@
 database_info:
-  host: mainline.proxy.rlwy.net
-  public_port: 12066
+  host: shortline.proxy.rlwy.net
+  public_port: 24046
   database: railway
   user: root
-  password: XKahsWDvEBIvWvijLrQVcSxgPMSmgBAh
+  password: TyeCtcJGTMIqAurynqCVqRGmYubNQNpA
   
 parking_slot:
   total_slots: 0
