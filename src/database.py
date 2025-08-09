@@ -64,7 +64,7 @@ class Table:
     def count(self):
         sql = f"SELECT COUNT(*) FROM `{self.name}`;"
         result = self.db.execute(sql, fetch=True)
-        return int(result[0][0]) if result else 0
+        return int(result[0][0]) if result else 0 # type: ignore
 
     def insert(self, columns: list, values: tuple):
         cols = ", ".join(f"`{c}`" for c in columns)

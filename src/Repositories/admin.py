@@ -2,7 +2,7 @@ from config.setting import settings
 from src.database import parking_slot
 class ADMIN():
     def __init__(self) -> None:
-        pass
+        pass 
     
     #Configure parking lot settings 
     def set_total_slots(self, total_slots: int) -> None:        
@@ -18,10 +18,11 @@ class ADMIN():
         select = parking_slot.select_all()
         print("=== Parking Status ===")
         for i in range(parking_slot.count()):
-            if select[i][1] == 1:
-                print(f"ID: {select[i][0]}  ----- availability: Free")
+            if select[i][1] == 1: # type: ignore
+                print(f"ID: {select[i][0]}  ----- availability: Free") # type: ignore
             else:
-                print(f"ID: {select[i][0]}  ----- availability: Occupied")
+                print(f"ID: {select[i][0]}  ----- availability: Occupied") # type: ignore
     
     
+
 admin = ADMIN()
