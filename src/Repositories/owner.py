@@ -30,7 +30,7 @@ class OWNER:
             return
 
         hours = tr.calculate_duration_hours()
-        fee   = hours * settings.hourly_rate
+        fee = hours * settings.hourly_rates
         print(f"\nThời gian đỗ: {hours} giờ")
         print(f"Phí phải thanh toán: {fee} VND")
 
