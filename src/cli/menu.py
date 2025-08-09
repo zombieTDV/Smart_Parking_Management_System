@@ -1,4 +1,4 @@
-from src.Repositories import admin, attendant, owner
+from src.Repositories.admin import admin
 
 def show_main_menu():
     while True:
@@ -32,16 +32,16 @@ def admin_menu():
 
         choice = input("Chọn: ")
 
-        # if choice == '1':
-        #     admin.configure_parking_lot()
-        # elif choice == '2':
-        #     admin.manage_parking_slots()
-        # elif choice == '3':
-        #     admin.generate_revenue_report()
-        # elif choice == '0':
-        #     break
-        # else:
-        #     print("Lựa chọn không hợp lệ.")
+        if choice == '1':
+            admin.configure_parking_lot()
+        elif choice == '2':
+            admin.manage_parking_slots()
+        elif choice == '3':
+            admin.generate_revenue_report()
+        elif choice == '0':
+            break
+        else:
+            print("Lựa chọn không hợp lệ.")
 
 def attendant_menu():
     while True:
