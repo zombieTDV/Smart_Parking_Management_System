@@ -49,12 +49,12 @@ class ParkingAttendant:
         và lưu bản ghi gửi xe vào table `parking_vehicle`.
         """
         rows = parking_slot.select_all()
-        free = [r for r in rows if r[1]]
+        free = [r for r in rows if r[1]] # type: ignore
         if not free:
             print("No available slots right now.")
             return
 
-        slot_id = free[0][0]
+        slot_id = free[0][0] # type: ignore
         # Cập nhật slot
         parking_slot.update(slot_id, {"available": False})
         # Chèn record xe

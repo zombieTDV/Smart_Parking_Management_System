@@ -72,6 +72,13 @@ class Table:
         sql = f"INSERT INTO `{self.name}` ({cols}) VALUES ({placeholder});"
         self.db.execute(sql, params=values, commit=True)
         print(f"1 record inserted into `{self.name}`.")
+        
+    def update(self, record_id: int, data: dict):
+        set_clause = ", ".join(f"`{k}` = %s" for k in data.keys())
+        values = tuple(data.values()) + (record_id,)
+        sql = f"UPDATE `{self.name}` SET {set_clause} WHERE `id` = %s;"
+        self.db.execute(sql, params=values, commit=True)
+        print(f"Record with ID {record_id} updated in `{self.name}`.")
 
 
 db = Database()
