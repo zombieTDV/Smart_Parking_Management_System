@@ -75,6 +75,22 @@ class Table:
         sql = f"INSERT INTO `{self.name}` ({cols}) VALUES ({placeholder});"
         self.db.execute(sql, params=values, commit=True)
         print(f"1 record inserted into `{self.name}`.")
+        
+    def set_value(self, record_name: str, record_id: int, column: str, value):
+        sql = f"UPDATE `{self.name}` SET `{column}` = %s WHERE `{record_name}` = %s;"
+        self.db.execute(sql, params=(value, record_id), commit=True)
+        print(f"Record with ID {record_id} updated in `{self.name}`.")
+        
+    def get_value(self, record_name: str, record_id: int, column: str):
+        sql = f"SELECT `{column}` FROM `{self.name}` WHERE `{record_name}` = %s;"
+        result = self.db.execute(sql, params=(record_id,), fetch=True)
+        return result if result else None  # type: 
+    
+    def find_record_with_value(self, column: str, value):
+        sql = f"SELECT * FROM `{self.name}` WHERE `{column}` = %s;"
+        result = self.db.execute(sql, params=(value,), fetch=True)
+        return result if result else None
+        
 ### sửa lại
     def update(self, record_id: int, data: dict):
         set_clause = ", ".join(f"`{k}` = %s" for k in data.keys())

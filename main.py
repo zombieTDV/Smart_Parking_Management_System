@@ -1,5 +1,6 @@
 from src.Repositories.admin import admin
 from src.models.account import Account
+from src.Repositories.owner import owner
 
 # from src.Repositories.attendant import ParkingAttendant
 # from src.Repositories.owner import User
@@ -14,4 +15,5 @@ if __name__ == "__main__":
     
     # admin.view_all_accounts()
     # # show_main_menu()
+    owner.view_available_slots()
     show_main_menu()
