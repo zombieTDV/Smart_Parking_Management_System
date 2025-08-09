@@ -1,66 +1,60 @@
-import mysql.connector
 from datetime import datetime
+from config.setting import settings
+from src.database import Table, db
+from src.models.parking_slot import parking_slot  
 
 class ParkingAttendant:
-    def __init__(self, host="localhost", user="root", password="", database="parking_db", rate_per_hour=5):
-        self.db_config = {
-            "host": host,
-            "user": user,
-            "password": password,
-            "database": database
-        }
-        self.rate_per_hour = rate_per_hour
-
-    def connect(self):
-        return mysql.connector.connect(**self.db_config)
+    def __init__(self):
+        self.slots_table = Table("parking_slot", db)
+        self.vehicles_table = Table("vehicles", db)
+        self.transactions_table = Table("transactions", db)
+        self.rate_per_hour = settings.cfg["parking_slot"]["hourly_rates"]
 
     def view_available_slots(self):
         """Hiển thị các chỗ trống"""
-        conn = self.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT slot_id FROM slots WHERE available = 1")
-        available = [row[0] for row in cur.fetchall()]
-        conn.close()
-        print("Available Slots:", available)
-        return available
+        available = self.slots_table.find_record_with_value(column='available', value=True)
+        if not available:
+            print("No available slots right now.")
+            return []
+        print("Available Slots:", [row[0] for row in available])
+        return [row[0] for row in available]  # slot_id là cột đầu tiên
 
     def check_in_vehicle(self, plate_number):
         """Nhận xe vào"""
         available_slots = self.view_available_slots()
         if not available_slots:
-            print("No available slots right now.")
             return
 
         assigned_slot = available_slots[0]
         check_in_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        conn = self.connect()
-        cur = conn.cursor()
-        cur.execute("UPDATE slots SET available = 0 WHERE slot_id = %s", (assigned_slot,))
-        cur.execute(
-            "INSERT INTO vehicles (plate_number, slot_id, check_in) VALUES (%s, %s, %s)",
+        # Đánh dấu slot là occupied
+        self.slots_table.set_value(
+            record_name='slot_id',
+            record_id=assigned_slot,
+            column='available',
+            value=False
+        )
+
+        # Thêm xe vào bảng vehicles
+        self.vehicles_table.insert(
+            ["plate_number", "slot_id", "check_in"],
             (plate_number, assigned_slot, check_in_time)
         )
-        conn.commit()
-        conn.close()
+
         print(f"Vehicle {plate_number} checked in at slot {assigned_slot}.")
 
     def check_out_vehicle(self, plate_number):
         """Trả xe, tính phí, lưu giao dịch"""
-        conn = self.connect()
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT slot_id, check_in FROM vehicles WHERE plate_number = %s",
-            (plate_number,)
-        )
-        row = cur.fetchone()
+        row = self.vehicles_table.find_record_with_value(column="plate_number", value=plate_number)
         if not row:
-            conn.close()
             print("Vehicle not found.")
             return
 
-        slot, check_in_str = row
+        slot = row[0][1]   # slot_id ở cột thứ 2 (0: id, 1: slot_id, 2: check_in)
+        check_in_str = row[0][2]
         check_in_time = datetime.strptime(check_in_str, "%Y-%m-%d %H:%M:%S")
+
         duration = datetime.now() - check_in_time
         hours_parked = int(duration.total_seconds() // 3600)
         if duration.total_seconds() % 3600 > 0:
@@ -69,32 +63,34 @@ class ParkingAttendant:
         fee = hours_parked * self.rate_per_hour
         check_out_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Giải phóng chỗ, xóa xe, lưu giao dịch
-        cur.execute("UPDATE slots SET available = 1 WHERE slot_id = %s", (slot,))
-        cur.execute("DELETE FROM vehicles WHERE plate_number = %s", (plate_number,))
-        cur.execute(
-            "INSERT INTO transactions (plate_number, slot_id, check_in, check_out, fee) VALUES (%s, %s, %s, %s, %s)",
+        # Giải phóng chỗ
+        self.slots_table.set_value(
+            record_name='slot_id',
+            record_id=slot,
+            column='available',
+            value=True
+        )
+
+        # Xóa xe khỏi bảng vehicles
+        self.vehicles_table.delete(record_name='plate_number', record_id=plate_number)
+
+        # Lưu giao dịch
+        self.transactions_table.insert(
+            ["plate_number", "slot_id", "check_in", "check_out", "fee"],
             (plate_number, slot, check_in_str, check_out_time, fee)
         )
-        conn.commit()
-        conn.close()
 
         print(f"Vehicle {plate_number} checked out from slot {slot}.")
         print(f"Hours parked: {hours_parked}, Fee: ${fee}")
 
     def view_transactions(self):
         """Xem toàn bộ lịch sử giao dịch"""
-        conn = self.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT plate_number, slot_id, check_in, check_out, fee FROM transactions")
-        transactions = cur.fetchall()
-        conn.close()
-
-        if not transactions:
+        records = self.transactions_table.select_all()
+        if not records:
             print("No transactions found.")
             return
-
         print("\nTransaction History:")
-        for plate, slot, check_in, check_out, fee in transactions:
-            print(f"Plate: {plate} | Slot: {slot} | In: {check_in} | Out: {check_out} | Fee: ${fee}")
+        for record in records:
+            # Giả sử cột: id, plate_number, slot_id, check_in, check_out, fee
+            print(f"Plate: {record[1]} | Slot: {record[2]} | In: {record[3]} | Out: {record[4]} | Fee: ${record[5]}")
 
