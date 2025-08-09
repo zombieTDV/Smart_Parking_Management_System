@@ -40,8 +40,6 @@ class Database:
         finally:
             cursor.close()
             conn.close()
-            
-            
 
 
 class Table:
@@ -74,7 +72,7 @@ class Table:
         sql = f"INSERT INTO `{self.name}` ({cols}) VALUES ({placeholder});"
         self.db.execute(sql, params=values, commit=True)
         print(f"1 record inserted into `{self.name}`.")
-        
+### sửa lại
     def update(self, record_id: int, data: dict):
         set_clause = ", ".join(f"`{k}` = %s" for k in data.keys())
         values = tuple(data.values()) + (record_id,)
@@ -103,6 +101,7 @@ class Table:
                 self.delete(row[0]) # type: ignore
         else:
             print("No rows to delete.")
+
 
 #Them moi class user        
 class User:
@@ -137,9 +136,11 @@ class User:
 
 db = Database()
 
-
+parking_slot = Table("parking_slot", db)
 
 user_table = Table("user", db)
+
+
 new_user = User(1, "", "", "")
 new_user.input_user()
 new_user.save_to_db(user_table)
