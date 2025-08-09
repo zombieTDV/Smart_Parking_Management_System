@@ -13,6 +13,10 @@ class ADMIN():
         settings.cfg["parking_slot"]["hourly_rates"]= hourly_rates
         settings.save()
     
+    def set_up_parking_slots(self, size: int) -> None:
+        parking_slot.create("slot_id INT AUTO_INCREMENT PRIMARY KEY, available BOOL NOT NULL")
+        for i in range(size):
+            parking_slot.insert(["available"], (True,))
     
     def manage_parking_slots(self) -> None:
         select = parking_slot.select_all()
