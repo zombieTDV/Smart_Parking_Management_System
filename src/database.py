@@ -40,6 +40,8 @@ class Database:
         finally:
             cursor.close()
             conn.close()
+            
+            
 
 
 class Table:
