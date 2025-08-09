@@ -1,0 +1,35 @@
+{
+    "slots": {
+        "S1": {
+            "available": true
+        },
+        "S2": {
+            "available": true
+        },
+        "S3": {
+            "available": true
+        },
+        "S4": {
+            "available": true
+        },
+        "S5": {
+            "available": true
+        },
+        "S6": {
+            "available": true
+        },
+        "S7": {
+            "available": true
+        },
+        "S8": {
+            "available": true
+        },
+        "S9": {
+            "available": true
+        },
+        "S10": {
+            "available": true
+        }
+    },
+    "vehicles": {}
+}

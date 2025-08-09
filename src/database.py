@@ -78,8 +78,6 @@ db = Database()
 
 parking_slot = Table("parking_slot", db)
 
-parking_slot.create("slot_id INT AUTO_INCREMENT PRIMARY KEY, available BOOL NOT NULL")
-
 # parking_slot.insert(["available"], (True,))
 
 # rows = parking_slot.select_all()
