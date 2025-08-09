@@ -53,16 +53,16 @@ def attendant_menu():
 
         choice = input("Chọn: ")
 
-        # if choice == '1':
-        #     attendant.check_in_vehicle()
-        # elif choice == '2':
-        #     attendant.check_out_vehicle()
-        # elif choice == '3':
-        #     attendant.update_slot_status()
-        # elif choice == '0':
-        #     break
-        # else:
-        #     print("Lựa chọn không hợp lệ.")
+        if choice == '1':
+            attendant.check_in_vehicle()
+        elif choice == '2':
+            attendant.check_out_vehicle()
+        elif choice == '3':
+            attendant.update_slot_status()
+        elif choice == '0':
+            break
+        else:
+            print("Lựa chọn không hợp lệ.")
 
 def owner_menu():
     while True:
