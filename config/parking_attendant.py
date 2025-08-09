@@ -73,27 +73,27 @@ class ParkingAttendant:
         print("Available Slots:", available)
 
 
-# Example usage
-if __name__ == "__main__":
-    attendant = ParkingAttendant(rate_per_hour=5)
+# # Example usage
+# if __name__ == "__main__":
+#     attendant = ParkingAttendant(rate_per_hour=5)
 
-    while True:
-        print("\n--- Parking Attendant Menu ---")
-        print("1. View available slots")
-        print("2. Check-in vehicle")
-        print("3. Check-out vehicle")
-        print("4. Exit")
-        choice = input("Enter choice: ")
+#     while True:
+#         print("\n--- Parking Attendant Menu ---")
+#         print("1. View available slots")
+#         print("2. Check-in vehicle")
+#         print("3. Check-out vehicle")
+#         print("4. Exit")
+#         choice = input("Enter choice: ")
 
-        if choice == "1":
-            attendant.view_available_slots()
-        elif choice == "2":
-            plate = input("Enter vehicle plate number: ")
-            attendant.check_in_vehicle(plate)
-        elif choice == "3":
-            plate = input("Enter vehicle plate number: ")
-            attendant.check_out_vehicle(plate)
-        elif choice == "4":
-            break
-        else:
-            print("Invalid choice.")
+#         if choice == "1":
+#             attendant.view_available_slots()
+#         elif choice == "2":
+#             plate = input("Enter vehicle plate number: ")
+#             attendant.check_in_vehicle(plate)
+#         elif choice == "3":
+#             plate = input("Enter vehicle plate number: ")
+#             attendant.check_out_vehicle(plate)
+#         elif choice == "4":
+#             break
+#         else:
+#             print("Invalid choice.")
