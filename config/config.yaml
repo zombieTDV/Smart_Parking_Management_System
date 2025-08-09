@@ -4,7 +4,6 @@ database_info:
   database: railway
   user: root
   password: TyeCtcJGTMIqAurynqCVqRGmYubNQNpA
-  
 parking_slot:
-  total_slots: 0
-  hourly_rates: 10
+  total_slots: 6
+  hourly_rates: 10.0
