@@ -73,10 +73,47 @@ class Table:
         self.db.execute(sql, params=values, commit=True)
         print(f"1 record inserted into `{self.name}`.")
 
+#Them moi class user        
+class User:
+    def __init__(self, id, username, role, password):
+        self.id = id
+        self.username = username
+        self.role = role
+        self.password = password
+
+    def __repr__(self):
+        return f"User(username={self.username})"
+    
+    def __str__(self):
+        return f"User(username={self.username}, role={self.role})"
+    
+    def input_user(self):
+        self.username = input("Nhập tên đăng nhập: ")
+        self.role = input("Nhập vai trò (admin/owner/user): ")
+        self.password = input("Nhập mật khẩu: ")
+
+    def save_to_db(self, table):
+        columns = ["id", "username", "role", "password"]
+        values = (self.id, self.username, self.role, self.password)
+        table.insert(columns, values)
+
+    def display_user(self):
+        print("\n--- Thông tin người dùng ---")
+        print("User details:")
+        print(f"ID: {self.id}")
+        print(f"Username: {self.username}, role : {self.role}, password: {self.password}")
+        print("------------------------------") 
 
 db = Database()
 
 parking_slot = Table("parking_slot", db)
+
+user_table = Table("user", db)
+new_user = User(1, "", "", "")
+new_user.input_user()
+new_user.save_to_db(user_table)
+new_user.display_user()
+
 
 # parking_slot.insert(["available"], (True,))
 
