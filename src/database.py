@@ -137,11 +137,3 @@ class Table:
         print(f"Table `{self.name}` has been dropped.")
 
 db = Database()
-
-# parking_slot.insert(["available"], (True,))
-
-# rows = parking_slot.select_all()
-
-# count = parking_slot.count()
-
-# parking_slot.delete_all()
