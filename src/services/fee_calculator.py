@@ -4,9 +4,6 @@ import math
 def fee_calculator(second: int) -> float:
     """
     Tính phí đỗ xe dựa trên thời gian đỗ.
-    Args:
-        second (int): Số giây xe đỗ.
-    Returns: float
     """
     if second <= 0:
         return 0.0

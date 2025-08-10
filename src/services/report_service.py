@@ -6,14 +6,14 @@ def print_report(title: str, value: str):
     print(f"\n{border}")
     print(f"|{padding}{title}{padding}|")
     print(border)
-    print(f"\n💰 Revenue: {value}\n")
+    print(f"\n💰 Doanh Thu: {value} VND\n")
     print(border + "\n")
 
 def day_revenue_report():
-    print_report("📅 Daily Revenue Report", settings.day_p)
+    print_report("📅 Báo cáo doanh thu theo ngày", settings.day_p)
 
 def month_revenue_report():
-    print_report("🗓️ Monthly Revenue Report", settings.month_p)
+    print_report("🗓️ Báo cáo doanh thu theo tháng", settings.month_p)
 
 def year_revenue_report():
-    print_report("📈 Yearly Revenue Report", settings.year_p)
+    print_report("📈 Báo cáo doanh thu theo năm", settings.year_p)
