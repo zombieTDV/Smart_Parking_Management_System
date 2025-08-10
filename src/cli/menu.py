@@ -180,7 +180,7 @@ def attendant_menu():
 
 def car_owner_menu(username: str, password: str):
     while True:
-        print("\n--- Menu Chủ xe ---")
+        print(f"\n--- Menu Chủ xe ---  || Username:  {username}, Payment Status: {transaction_service.get_payment_status(find_user_id_by_username(username))}")
         print("1. Xem thông tin chỗ đỗ")
         print("2. Thanh toán")
         print("0. Quay lại")
@@ -191,7 +191,13 @@ def car_owner_menu(username: str, password: str):
         elif choice == '2':
             print(f"Số tiền thanh toán: {calculate_fee(find_user_id_by_username(username), find_slot_id_by_user_id(username))} VND")
             
-            transaction_service.check_out_vehicle(find_user_id_by_username(username), find_slot_id_by_user_id(username))
+            payment_choice = input("Xác nhận thanh toán? (y/n): ")
+            if payment_choice.lower() == 'y':
+                transaction_service.check_out_vehicle(find_user_id_by_username(username), find_slot_id_by_user_id(username))
+            elif payment_choice.lower() == 'n':
+                print("❌ Thanh toán đã bị hủy.")
+            else:
+                print("❌ Lựa chọn không hợp lệ.")
         elif choice == '0':
             break
         else:

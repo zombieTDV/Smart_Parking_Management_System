@@ -172,6 +172,11 @@ class TransactionService:
             ID_parking_slot=slot_id,
             data={"check_out": True}
         )
+        transaction_service.update_record(
+            ID=user_id,
+            ID_parking_slot=slot_id,
+            data={"pay": True}
+        )
         transaction_service.get_duration_seconds(user_id, slot_id)
         print(f"✅ Xe đã được check-out từ chỗ đỗ ID {slot_id}.")
         parking_slot.release_slot(slot_id)
@@ -193,7 +198,7 @@ class TransactionService:
         """
         user = self.table.find_record_with_value(column='username', value=username)
         if user:
-            return user[0][0] # type: ignore
+            return user[0][3] # type: ignore
         print(f"❌ Không tìm thấy người dùng với tên đăng nhập: {username}")
         return -1
         
@@ -209,6 +214,21 @@ class TransactionService:
             return slot[0][1] # type: ignore
         print(f"❌ Không tìm thấy chỗ đỗ cho người dùng: {username}")
         return -1
+    
+    def get_payment_status(self, user_id: int):
+        """
+        Lấy trạng thái thanh toán của người dùng.
+        """
+        record = self.table.get_value(
+            record_name='ID',
+            record_id=user_id,
+            column='pay')
+        
+        if record == 1:
+            return "Đã thanh toán"
+        elif record == 0:
+            return "Chưa thanh toán"
+        
 
 
 class TransactionRecord:

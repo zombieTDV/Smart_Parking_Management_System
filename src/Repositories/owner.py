@@ -8,13 +8,8 @@ class CarOwner:
 
     def view_available_slots(self):
         """
-        Hiển thị danh sách các chỗ đỗ còn trống.
+        Hiển thị danh sách các chỗ đỗ.
         """
-        free_slots = parking_slot.get_available_slots()
-        if not free_slots:
-            print("❌ Hiện tại không có chỗ trống.")
-            return
+        parking_slot.view_available_slots()
 
-        print("\nChỗ đỗ còn trống:")
-        for slot in free_slots:
-            print(f"- ID: {slot[0]}") # type: ignore
+    
