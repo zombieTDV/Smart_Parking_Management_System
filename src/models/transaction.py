@@ -178,7 +178,6 @@ class TransactionService:
             ID_parking_slot=slot_id,
             data={"pay": True}
         )
-        transaction_service.get_duration_seconds(ID, slot_id)
         print(f"✅ Xe đã được check-out từ chỗ đỗ ID {slot_id}.")
         parking_slot.release_slot(slot_id)
         

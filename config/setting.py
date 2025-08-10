@@ -17,6 +17,10 @@ class Settings:
             self.total_slots = self.cfg["parking_slot"]["total_slots"]
             self.hourly_rates = self.cfg["parking_slot"]["hourly_rates"]
             
+            self.day_p = self.cfg["profit"]["day"]
+            self.month_p = self.cfg["profit"]["month"]
+            self.year_p = self.cfg["profit"]["year"]
+            
     def save(self) -> None:
         with open(self.path, "w") as file:
             yaml.safe_dump(self.cfg, file, sort_keys=False)

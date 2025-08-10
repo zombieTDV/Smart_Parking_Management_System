@@ -1,12 +1,16 @@
 # src/cli/menu.py
 
 from src.Repositories.admin import admin
-from src.models.parking_slot import parking_slot
 from src.Repositories.owner import CarOwner
-import src.services.auth_service as auth
-from src.services.parking_service import calculate_fee, view_available_slots, check_in_vehicle, check_out_vehicle, find_slot_id_by_user_id, find_user_id_by_username
+
+from src.models.parking_slot import parking_slot
 from src.models.transaction import transaction_service
 from src.models.account import accounts_central
+
+import src.services.auth_service as auth
+from src.services.parking_service import calculate_fee, view_available_slots, check_in_vehicle, check_out_vehicle
+from src.services import report_service
+
 
 car_owner = None
 
@@ -65,6 +69,8 @@ def admin_menu():
         print("4. Xem lịch sử giao dịch")
         print("===== Quản lý cơ sở dữ liệu ===")
         print("5. Quản lý cơ sở dữ liệu")
+        print("===== Báo cáo doanh thu ===")
+        print("6. In báo cáo doanh thu")
         print("0. Quay lại")
 
         choice = input("Chọn: ").strip()
@@ -145,8 +151,27 @@ def admin_menu():
                     print("✅ Đã xóa bảng giao dịch.")
                 else:
                     print("❌ Lựa chọn không hợp lệ.")
+            
             elif db_choice == '0':
                 continue
+        elif choice == '6':
+            print("\n--- Chọn loại báo cáo ---")
+            print("1. Báo cáo theo ngày")
+            print("2. Báo cáo theo tháng")
+            print("3. Báo cáo theo năm")
+            print("0. Quay lại")
+            report_choice = input("Chọn: ").strip()
+            if report_choice == '1':
+                report_service.day_revenue_report()
+            elif report_choice == '2':
+                report_service.month_revenue_report()
+            elif report_choice == '3':
+                report_service.year_revenue_report()
+            elif report_choice == '0':
+                continue
+            else:
+                print("❌ Lựa chọn không hợp lệ.")
+            
             
         elif choice == '0':
             break

@@ -1,6 +1,7 @@
 from src.services.fee_calculator import fee_calculator
 from src.models.transaction import transaction_service, TransactionRecord
 from src.models.parking_slot import parking_slot
+from config.setting import settings
 
 def calculate_fee(ID: int, slot_id: int) -> float:
     total = fee_calculator(transaction_service.get_duration_seconds(ID, slot_id))
@@ -53,4 +54,9 @@ def check_out_vehicle(ID: int, slot_id: int) -> None:
     Xử lý check-out cho xe ra khỏi bãi đỗ.
     """
     transaction_service.check_out_vehicle(ID, slot_id) 
-    print(f"Số tiền thanh toán: {calculate_fee(ID, slot_id)} VND")
+    fee = calculate_fee(ID, slot_id)
+    print(f"Số tiền thanh toán: {fee} VND")
+    
+    settings.day_p += fee
+    settings.save()
+    
