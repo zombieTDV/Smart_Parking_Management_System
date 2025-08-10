@@ -42,5 +42,4 @@ Thumbs.db
 tests/
 personal_test.py
 screenshots/
-docs/
 *.log
