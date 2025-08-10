@@ -1,4 +1,3 @@
-from pyclbr import Class
 import mysql.connector
 from config.setting import settings
 
@@ -17,7 +16,7 @@ def handle_errors(func):
 class Database:
     def __init__(self):
         self.pk_map = {
-            "parking_service": ["ID_user", "ID_parking_slot"],
+            "parking_service": ["ID", "ID_parking_slot"],
             # Bạn có thể thêm bảng khác ở đây nếu cần
         }
 
@@ -44,6 +43,14 @@ class Database:
         finally:
               cursor.close()
               conn.close()
+              
+    def drop_table(self, table_name: str):
+        """
+        Xóa bảng theo tên.
+        """
+        sql = f"DROP TABLE IF EXISTS `{table_name}`;"
+        self.execute(sql, commit=True)
+        print(f"Table `{table_name}` has been dropped if it existed.")
     
 class Table:
     def __init__(self, name: str, db: Database):
@@ -120,59 +127,14 @@ class Table:
                 self.delete(row[0]) # type: ignore
         else:
             print("No rows to delete.")
-
-
-#bảng dịch theo dõi dịch vụ để xe " ID_user | check_in (yes/no) | check_out (yes/no) | ID_parking_slot | parking_time(tính theo giây) | Pay? (yes/no)"
-def validate_pay(value):
-    if not isinstance(value, bool):
-        raise ValueError(f"Trường 'Pay' chỉ nhận kiểu bool True/False, nhận: {value}")
-
-def validate_yes_no(value, field_name):
-    if value not in ("yes", "no"):
-        raise ValueError(f"Trường '{field_name}' chỉ nhận giá trị 'yes' hoặc 'no', nhận: {value}")
-
-class ParkingService(Table):
-    def __init__(self, db: Database):
-        super().__init__("parking_service", db)
-        schema = """ """
-        self.create(schema)
-
-    def insert(self, columns: list, values: tuple):
-        yes_no_fields = ["check_in", "check_out", "Pay"]
-        values = list(values)
-        for field in yes_no_fields:
-            if field in columns:
-                idx = columns.index(field)
-                # Convert boolean to "yes"/"no" for Pay field
-                if field == "Pay" and isinstance(values[idx], bool):
-                    values[idx] = "yes" if values[idx] else "no"
-                validate_yes_no(values[idx], field)
-        super().insert(columns, tuple(values))
-
-    def update(self, ID_user: int, ID_parking_slot: int, data: dict):
-        yes_no_fields = ["check_in", "check_out", "Pay"]
-        for field in yes_no_fields:
-            if field in data:
-                validate_yes_no(data[field], field)
-
-        set_clause = ", ".join(f"`{k}` = %s" for k in data.keys())
-        values = tuple(data.values()) + (ID_user, ID_parking_slot)
-        sql = f"""
-        UPDATE `{self.name}` 
-        SET {set_clause} 
-        WHERE ID_user = %s AND ID_parking_slot = %s;
+            
+    def drop(self):
         """
-        self.db.execute(sql, params=values, commit=True)
-        print(f"Record with ID_user={ID_user} and ID_parking_slot={ID_parking_slot} updated.")
-
-    def delete(self, ID_user: int, ID_parking_slot: int):
-        sql = f"DELETE FROM `{self.name}` WHERE ID_user = %s AND ID_parking_slot = %s;"
-        self.db.execute(sql, params=(ID_user, ID_parking_slot), commit=True)
-        print(f"Record with ID_user={ID_user} and ID_parking_slot={ID_parking_slot} deleted.")
-
-parking_service = ParkingService(db=Database())
-parking_slot = Table("parking_slot", db=Database())
-account = Table("account", db=Database())
+        Drop the table.
+        """
+        sql = f"DROP TABLE IF EXISTS `{self.name}`;"
+        self.db.execute(sql, commit=True)
+        print(f"Table `{self.name}` has been dropped.")
 
 db = Database()
 

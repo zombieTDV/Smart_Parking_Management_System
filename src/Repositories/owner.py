@@ -2,7 +2,7 @@ from config.setting import settings
 from src.models.parking_slot import parking_slot#, transaction_repo
 # from src.models import Transaction
 
-class OWNER:
+class CarOwner:
     def __init__(self) -> None:
         pass
 
@@ -40,5 +40,3 @@ class OWNER:
     #         print("✅ Thanh toán thành công. Cảm ơn bạn đã sử dụng dịch vụ.")
     #     else:
     #         print("❌ Thanh toán đã hủy.")
-
-owner = OWNER()

@@ -2,7 +2,7 @@ from config.setting import settings
 from src.database import Table, db
 from datetime import datetime
 
-class Parking_slot:
+class ParkingSlot:
     def __init__(self, total_slots=None, hourly_rates=None):
         self.table = Table("parking_slot", db)
         
@@ -23,7 +23,7 @@ class Parking_slot:
         # self.update_from_settings()
         
     def __repr__(self):
-        return f"Parking_slot(total_slots={self.total_slots}, hourly_rates={self.hourly_rates})"
+        return f"Parking_Slot(total_slots={self.total_slots}, hourly_rates={self.hourly_rates})"
     
     def set_total_slots(self, total_slots: int) -> None:
         """
@@ -112,9 +112,24 @@ class Parking_slot:
             return []
         print("=== Parking Status ===")
         return select
+    
+    def is_slot_available(self, slot_id: int):
+        """
+        Kiểm tra xem slot có còn trống hay không.
+        """
+        result = self.table.get_value(record_name='slot_id', record_id=slot_id, column='available')
+        if result and result[0][0]: # type: ignore
+                return True
+        return False
+    
+    def set_slot_status(self, slot_id: int, status: bool) -> None:
+        """
+        Cập nhật trạng thái của slot.
+        """
+        self.table.set_value(record_name='slot_id', record_id=slot_id, column='available', value=status)
                 
-        
-parking_slot = Parking_slot(
+                
+parking_slot = ParkingSlot(
     total_slots=settings.cfg["parking_slot"]["total_slots"],
     hourly_rates=settings.cfg["parking_slot"]["hourly_rates"])
 

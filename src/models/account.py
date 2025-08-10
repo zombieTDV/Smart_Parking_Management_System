@@ -1,7 +1,7 @@
 from src.database import Table, db
 #Them moi class user        
 
-class Account_central:
+class AccountCentral:
     def __init__(self):
         self.table = Table("account", db)
         self.table.create(
@@ -43,9 +43,15 @@ class Account_central:
         Xóa tất cả tài khoản.
         """
         self.table.delete_all()
+        
+    def find_record_with_value(self, column: str, value):
+        """
+        Tìm bản ghi theo giá trị của cột.
+        """
+        return self.table.find_record_with_value(column, value)
 
 class Account:
-    def __init__(self, username, role, password):
+    def __init__(self, username=None, role=None, password=None):
         self.username = username
         self.role = role
         self.password = password
@@ -59,7 +65,7 @@ class Account:
     
     def create_account(self):
         self.username = input("Nhập tên đăng nhập: ")
-        self.role = input("Nhập vai trò (admin/owner/user): ")
+        self.role = input("Nhập vai trò (admin/attendant/owner): ")
         self.password = input("Nhập mật khẩu: ")
         
         if not self.username or not self.role or not self.password:
@@ -83,4 +89,4 @@ class Account:
     
         
         
-accounts_central = Account_central()
+accounts_central = AccountCentral()
