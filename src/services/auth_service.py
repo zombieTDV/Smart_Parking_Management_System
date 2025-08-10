@@ -1,5 +1,5 @@
 from src.models.account import Account, accounts_central
-# ----- Register Functions -----
+# ----- Register -----
 def resiger_admin():
     admin = Account()
     
@@ -33,7 +33,7 @@ def register_car_owner():
     print(f"Tài khoản: {owner.username}, Vai trò: {owner.role}")
     
     
-#--- Login Functions -----
+#--- Login -----
 def login_admin() ->bool:
     print("\n--- Đăng nhập Admin ---")
     username = input("Tên đăng nhập: ").strip()
@@ -69,7 +69,7 @@ def login_car_owner(username: str, password: str) ->bool:
         return False
 
 
-# ----- Validation Functions -----
+# ----- Validation -----
 def validate_admin(username: str, password: str) -> bool:
     """
     Kiểm tra xem tài khoản Admin có hợp lệ hay không.
@@ -78,7 +78,7 @@ def validate_admin(username: str, password: str) -> bool:
         admin_account = accounts_central.find_record_with_value(column='username', value=username)[0] # type: ignore
         if admin_account[2] == 'admin' and admin_account[3] == password:  # type: ignore
             return True
-    except IndexError:
+    except:
         return False
     
     return False
@@ -91,7 +91,7 @@ def validate_attendant(username: str, password: str) -> bool:
         record = accounts_central.find_record_with_value(column='username', value=username)[0]  # type: ignore
         if record[2] == 'attendant' and record[3] == password: # type: ignore
             return True
-    except IndexError:
+    except:
         return False
     return False
 
@@ -103,7 +103,7 @@ def validate_car_owner(username: str, password: str) -> bool:
         record = accounts_central.find_record_with_value(column='username', value=username)[0]  # type: ignore
         if record[2] == 'owner' and record[3] == password:  # type: ignore # role & password
             return True
-    except IndexError:
+    except:
         return False
     return False
 
