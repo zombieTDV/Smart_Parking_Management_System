@@ -56,32 +56,26 @@ smart_parking_management_system/
 │   │   ├── user.py
 │   │   ├── parking_slot.py
 │   │   └── transaction.py
-│   │   
+│   │
+│   │
+│   ├──Repositories/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── attendant.py
+│   │   └── owner.py
+│   │  
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── auth_service.py
 │   │   ├── parking_service.py
 │   │   ├── fee_calculator.py
-│   │   └── report_service.py
-│   │
-│   ├── controllers/
-│   │   ├── __init__.py
-│   │   ├── admin_controller.py
-│   │   ├── attendant_controller.py
-│   │   └── owner_controller.py
+│   │   report_service.py
 │   │
 │   ├── cli/
 │   │   ├── __init__.py
 │   │   └── menu.py
 │   │
-│   └── utils/
-│       ├── __init__.py
-│       ├── logger.py
-│       └── helpers.py
 │
 ├── docs/
-│   ├── flowchart.png
-│   └── class_descriptions.md
-│
-├── screenshots/
-    └── role_based_interactions.png
+    ├── flowchart.png
+    └── class_descriptions.md

@@ -10,17 +10,17 @@ class ParkingAttendant:
         """
         view_available_slots()
     
-    def check_in_vehicle(self, user_id: int, slot_id: int, username: str):
+    def check_in_vehicle(self, slot_id: int, username: str):
         """
         Xử lý check-in cho xe vào bãi đỗ.
         """
-        check_in_vehicle(user_id, slot_id, username)
+        check_in_vehicle(slot_id, username)
         
-    def check_out_vehicle(self, user_id: int, slot_id: int):
+    def check_out_vehicle(self, ID: int, slot_id: int):
         """
         Xử lý check-out cho xe ra khỏi bãi đỗ.
         """
-        check_out_vehicle(user_id, slot_id)
+        check_out_vehicle(ID, slot_id)
         
     
     def view_transaction_history(self):
