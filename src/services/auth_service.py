@@ -51,7 +51,7 @@ def login_attendant() ->bool:
     print("\n--- Đăng nhập Nhân viên giữ xe ---")
     username = input("Tên đăng nhập: ").strip()
     password = input("Mật khẩu: ").strip()
-
+    
     if validate_attendant(username, password):
         print(f"✅ Đăng nhập thành công: Nhân viên [{username}]")
         return True

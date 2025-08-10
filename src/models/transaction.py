@@ -17,7 +17,7 @@ class TransactionService:
         self.table = Table("transaction_service", db)
         # Add timestamp columns. check_in_time uses CURRENT_TIMESTAMP by default.
         self.table.create(
-            "ID INT NOT NULL, "
+            "ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
             "ID_parking_slot INT NOT NULL, "
             "username VARCHAR(50) NOT NULL, "
             "check_in BOOL NOT NULL DEFAULT 0, "
@@ -100,7 +100,7 @@ class TransactionService:
                 # r structure: (ID, ID_parking_slot, check_in, check_out, pay, check_in_time, check_out_time, duration_seconds)
                 dur = r[8] # type: ignore
                 print(
-                    f"ID: {r[0]}, ID_parking_slot: {r[1]}, UserName: {r[2]} "  # type: ignore
+                    f"ID: {r[0]}, ID_parking_slot: {r[1]}, UserName: {r[2]}, "  # type: ignore
                     f"check_in: {bool(r[3])}, check_out: {bool(r[4])}, pay: {bool(r[5])}, " # type: ignore
                     f"duration: {seconds_to_hms(dur)}" # type: ignore
                 )
@@ -163,30 +163,31 @@ class TransactionService:
     def delete_all_records(self) -> None:
         self.table.delete_all()
         
-    def check_out_vehicle(self, user_id: int, slot_id: int) -> None:
+    def check_out_vehicle(self, ID: int, slot_id: int) -> None:
         """
         Xử lý check-out cho xe ra khỏi bãi đỗ.
         """
         transaction_service.update_record(
-            ID=user_id,
+            ID=ID,
             ID_parking_slot=slot_id,
             data={"check_out": True}
         )
+        
         transaction_service.update_record(
-            ID=user_id,
+            ID=ID,
             ID_parking_slot=slot_id,
             data={"pay": True}
         )
-        transaction_service.get_duration_seconds(user_id, slot_id)
+        transaction_service.get_duration_seconds(ID, slot_id)
         print(f"✅ Xe đã được check-out từ chỗ đỗ ID {slot_id}.")
         parking_slot.release_slot(slot_id)
         
-    def set_record_pay(self, user_id: int, slot_id: int, status: bool) -> None:
+    def set_record_pay(self, ID: int, slot_id: int, status: bool) -> None:
         """
         Cập nhật trạng thái của bản ghi giao dịch.
         """
         transaction_service.update_record(
-            ID=user_id,
+            ID=ID,
             ID_parking_slot=slot_id,
             data={"pay": status}
         )
@@ -198,7 +199,7 @@ class TransactionService:
         """
         user = self.table.find_record_with_value(column='username', value=username)
         if user:
-            return user[0][3] # type: ignore
+            return user[0][0] # type: ignore
         print(f"❌ Không tìm thấy người dùng với tên đăng nhập: {username}")
         return -1
         
@@ -211,29 +212,28 @@ class TransactionService:
             return -1 
         slot = self.table.find_record_with_value(column='ID', value=user_id)
         if slot:
-            return slot[0][1] # type: ignore
+            return slot[0][0] # type: ignore
         print(f"❌ Không tìm thấy chỗ đỗ cho người dùng: {username}")
         return -1
     
-    def get_payment_status(self, user_id: int):
+    def get_payment_status(self, ID: int):
         """
         Lấy trạng thái thanh toán của người dùng.
         """
         record = self.table.get_value(
             record_name='ID',
-            record_id=user_id,
+            record_id=ID,
             column='pay')
         
-        if record == 1:
+        if record[0][0] == 1: # type: ignore
             return "Đã thanh toán"
-        elif record == 0:
+        elif record[0][0] == 0: # type: ignore
             return "Chưa thanh toán"
         
 
 
 class TransactionRecord:
-    def __init__(self, ID: int, ID_parking_slot: int, username: str):
-        self.ID = ID
+    def __init__(self, ID_parking_slot: int, username: str):
         self.ID_parking_slot = ID_parking_slot
         self.username = username
         
@@ -253,7 +253,7 @@ class TransactionRecord:
         self.check_out_time = None
         self.save_to_db()
 
-    def check_out_user(self):
+    def check_out_user(self, ID: int):
         self.check_out = True
         self.check_out_time = datetime.now()
         sql_update = """
@@ -262,14 +262,14 @@ class TransactionRecord:
         WHERE ID = %s AND ID_parking_slot = %s
         AND check_in = TRUE AND check_out = FALSE
         """
-        db.execute(sql_update, params=(self.check_out_time, self.ID, self.ID_parking_slot), commit=True)
+        db.execute(sql_update, params=(self.check_out_time, ID, self.ID_parking_slot), commit=True)
 
-        duration_sec = transaction_service.get_duration_seconds(self.ID, self.ID_parking_slot)
-        print(f"✅ User {self.ID} đã check-out. Tổng thời gian: {seconds_to_hms(duration_sec)}")
+        duration_sec = transaction_service.get_duration_seconds(ID, self.ID_parking_slot)
+        print(f"✅ User {self.username} đã check-out. Tổng thời gian: {seconds_to_hms(duration_sec)}")
 
     def save_to_db(self):
-        columns = ["ID", "ID_parking_slot", "username", "check_in", "check_out", "pay", "check_in_time", "check_out_time"]
-        values = (self.ID, self.ID_parking_slot, self.username, self.check_in, self.check_out, self.pay, self.check_in_time, self.check_out_time)
+        columns = ["ID_parking_slot", "username", "check_in", "check_out", "pay", "check_in_time", "check_out_time"]
+        values = (self.ID_parking_slot, self.username, self.check_in, self.check_out, self.pay, self.check_in_time, self.check_out_time)
         transaction_service.table.insert(columns, values)
         
 transaction_service = TransactionService()

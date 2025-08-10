@@ -3,8 +3,12 @@ from src.models.parking_slot import parking_slot#, transaction_repo
 # from src.models import Transaction
 
 class CarOwner:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, username: str, password: str) -> None:
+        self.username = username
+        self.password = password
+        
+        
+        self.fee = 0.0
 
     def view_available_slots(self):
         """
@@ -12,4 +16,5 @@ class CarOwner:
         """
         parking_slot.view_available_slots()
 
+    
     

@@ -1,9 +1,8 @@
 # src/cli/menu.py
 
 from src.Repositories.admin import admin
-from src.Repositories.owner import CarOwner
-import src.Repositories.attendant as attendant
 from src.models.parking_slot import parking_slot
+from src.Repositories.owner import CarOwner
 import src.services.auth_service as auth
 from src.services.parking_service import calculate_fee, view_available_slots, check_in_vehicle, check_out_vehicle, find_slot_id_by_user_id, find_user_id_by_username
 from src.models.transaction import transaction_service
@@ -39,7 +38,8 @@ def show_main_menu():
             username = input("Tên đăng nhập: ").strip()
             password = input("Mật khẩu: ").strip()
             if auth.login_car_owner(username, password):
-                car_owner_menu(username, password)
+                car_owner = CarOwner(username, password)
+                car_owner_menu(car_owner)
             
         elif choice == '4':
             auth.resiger_admin()
@@ -134,7 +134,7 @@ def admin_menu():
                 if db_transaction_choice == '1':
                     transaction_service.view_all_records()
                 elif db_transaction_choice == '2':
-                    ID = int(input("Nhập ID người dùng: "))
+                    ID = int(input("Nhập ID giao dịch: "))
                     id_slot = int(input("Nhập ID chỗ đỗ: "))
                     transaction_service.delete_record(ID, id_slot)
                 elif db_transaction_choice == '3':
@@ -165,9 +165,9 @@ def attendant_menu():
 
         choice = input("Chọn: ").strip()
         if choice == '1':
-            check_in_vehicle(username=input("Nhập Username: "), user_id= int(input("Nhập ID người dùng: ")), slot_id= int(input("Nhập ID chỗ đỗ: ")))
+            check_in_vehicle(username=input("Nhập Username: "), slot_id= int(input("Nhập ID chỗ đỗ: ")))
         elif choice == '2':
-            check_out_vehicle(int(input("Nhập ID người dùng: ")), int(input("Nhập ID chỗ đỗ: ")))
+            check_out_vehicle(int(input("Nhập ID giao dịch: ")), int(input("Nhập ID chỗ đỗ: ")))
         elif choice == '3':
             view_available_slots()
         elif choice == '4':
@@ -178,26 +178,30 @@ def attendant_menu():
             print("❌ Lựa chọn không hợp lệ.")
 
 
-def car_owner_menu(username: str, password: str):
+def car_owner_menu(car_owner: CarOwner):
+    parking_slot.view_available_slots()
+    ID = int(input("Nhập ID giao dịch: "))
+    ID_slot = int(input("Nhập ID chỗ đỗ: "))
     while True:
-        print(f"\n--- Menu Chủ xe ---  || Username:  {username}, Payment Status: {transaction_service.get_payment_status(find_user_id_by_username(username))}")
+        car_owner.fee = calculate_fee(ID, ID_slot)
+        
+        print(f"\n--- Menu Chủ xe ---  || Username:  {car_owner.username}, Payment Status: {transaction_service.get_payment_status(ID)} || {car_owner.fee} VND")
         print("1. Xem thông tin chỗ đỗ")
-        print("2. Thanh toán")
+        print("2. Check in Online")
+        print("3. Thanh toán")
         print("0. Quay lại")
 
         choice = input("Chọn: ").strip()
         if choice == '1':
             parking_slot.view_available_slots()
-        elif choice == '2':
-            print(f"Số tiền thanh toán: {calculate_fee(find_user_id_by_username(username), find_slot_id_by_user_id(username))} VND")
             
-            payment_choice = input("Xác nhận thanh toán? (y/n): ")
-            if payment_choice.lower() == 'y':
-                transaction_service.check_out_vehicle(find_user_id_by_username(username), find_slot_id_by_user_id(username))
-            elif payment_choice.lower() == 'n':
-                print("❌ Thanh toán đã bị hủy.")
-            else:
-                print("❌ Lựa chọn không hợp lệ.")
+        elif choice == '2':
+            slot_id = int(input("Nhập ID chỗ đỗ bạn muốn: "))
+            if parking_slot.is_slot_available(slot_id):
+                check_in_vehicle(slot_id, car_owner.username)
+                print(f"✅ Xe của bạn đã được check-in vào chỗ đỗ ID {slot_id}.")
+        elif choice == '3':
+            check_out_vehicle(ID, ID_slot)
         elif choice == '0':
             break
         else:
