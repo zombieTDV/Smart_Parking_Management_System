@@ -1,6 +1,6 @@
 # Smart Parking Management System
 
-A comprehensive parking management system with role-based access control and automated fee calculation.
+Hệ thống quản lý chỗ đỗ xe thông minh qua kết nối database.
 
 ## Installation Guide
 
@@ -77,5 +77,4 @@ smart_parking_management_system/
 │   │
 │
 ├── docs/
-    ├── flowchart.png
-    └── class_descriptions.md
+    └── flowchart.png
