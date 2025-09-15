@@ -3,5 +3,3 @@ def test_one():
 
 def test_two():
     assert False
-    
-test_two()
