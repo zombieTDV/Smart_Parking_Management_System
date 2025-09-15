@@ -39,7 +39,6 @@ env/
 Thumbs.db
 
 # Project specific
-tests/
 personal_test.py
 screenshots/
 *.log
