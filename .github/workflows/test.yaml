@@ -1,7 +1,9 @@
-name: Test Project
+name: CI — Test on PR & Push
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
