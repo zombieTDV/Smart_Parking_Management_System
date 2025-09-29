@@ -2,7 +2,7 @@ name: CI — Test on PR & Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
   pull_request:
     branches: [ main ]
 
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.12
           cache: 'pip'
           cache-dependency-path: requirements.txt
 
@@ -25,5 +25,18 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: run-test
-        run: pytest -q
+      #Super-Linter goes here
+      - name: Run Super-Linter
+        uses: github/super-linter@v5
+        env:
+          VALIDATE_PYTHON_MYPY: true
+          PYTHON_MYPY_ARGS: "--no-install-types --ignore-missing-imports"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run unit tests
+        if: github.ref == 'refs/heads/dev'
+        run: pytest -q tests/unit
+
+      - name: Run integration tests
+        if: github.event_name == 'pull_request'
+        run: pytest -q tests/integration
