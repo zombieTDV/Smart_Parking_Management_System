@@ -3,3 +3,6 @@ def test_one():
 
 def test_two():
     print("Test 2")
+    
+def test_three():
+    print("Linting test")
